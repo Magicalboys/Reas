@@ -17,8 +17,7 @@ app.use(bodyParser.urlencoded({extended: true}));
 // 注入事件处理的脚本
 app.use(express.static(path.resolve(process.cwd(), 'client_build')));
 
-// demo api
-app.post('/api/getDemoData', (req, res) => {
+app.post('/api/getUserData', (req, res) => {
     res.send({
         data: req.body,
         status_code: 0,

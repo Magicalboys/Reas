@@ -1,6 +1,6 @@
 import React from 'react';
 import Home from '@/pages/Home';
-import Demo from '@/pages/Demo';
+import User from '@/pages/User';
 import {Route, Routes} from 'react-router-dom';
 
 interface IRouter {
@@ -15,13 +15,13 @@ export const routesConfig: Array<IRouter> = [
         element: <Home />,
     },
     {
-        path: '/demo',
-        element: <Demo />,
-        loadData: Demo.getInitProps,
+        path: '/user',
+        element: <User />,
+        loadData: User.getInitProps,
     },
 ];
 
-export const getRoutes = (routesConfig: Array<IRouter>) => { // TODO: 增加嵌套路由子<Route />的生成
+export const getRoutes = (routesConfig: Array<IRouter>) => {
     return (
         <Routes>
             {

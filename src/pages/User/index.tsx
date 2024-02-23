@@ -1,19 +1,18 @@
-import React, {useEffect, useState, Fragment} from 'react';
+import React, {Fragment} from 'react';
 import {ISSRFunction} from '@/utils/type';
 import {connect} from 'react-redux';
-import axios from 'axios';
-import {getDemoData} from './store/demoReducer';
+import {getUserData} from '../../store/features/userSlice';
 import {Helmet} from 'react-helmet';
 
 interface IProps {
   content?: string;
-  getDemoData?: (data: string) => void;
+  getUserData?: (data: string) => void;
 }
 
-const Demo: ISSRFunction<IProps> = data => (
+const User: ISSRFunction<IProps> = data => (
     <Fragment>
         <Helmet>
-            <title>简易的服务器端渲染框架 - DEMO</title>
+            <title>简易的服务器端渲染框架 - User</title>
             <meta name="description" content="服务器端渲染框架" />
         </Helmet>
         <div>
@@ -21,7 +20,7 @@ const Demo: ISSRFunction<IProps> = data => (
             <button
                 type="button"
                 onClick={(): void => {
-                    data?.getDemoData?.('刷新过后的数据');
+                    data?.getUserData?.('刷新过后的数据');
                 }}
             >
         刷新
@@ -33,17 +32,17 @@ const Demo: ISSRFunction<IProps> = data => (
 const mapStateToProps = (state: any): any =>
 // 将对应reducer的内容透传回dom
     ({
-        content: state?.demo?.content,
+        content: state?.user?.content,
     });
 
 const mapDispatchToProps = (dispatch: any): Record<string, unknown> => ({
-    getDemoData: (data: string): void => {
-        dispatch(getDemoData(data));
+    getUserData: (data: string): void => {
+        dispatch(getUserData(data));
     },
 });
 
-const storeDemo: any = connect(mapStateToProps, mapDispatchToProps)(Demo);
+const storeUser: any = connect(mapStateToProps, mapDispatchToProps)(User);
 
-storeDemo.getInitProps = (store: any, data?: string): void => store.dispatch(getDemoData(data || '这是初始化的demo'));
+storeUser.getInitProps = (store: any, data?: string): void => store.dispatch(getUserData(data || '这是初始化的User'));
 
-export default storeDemo;
+export default storeUser;
