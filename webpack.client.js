@@ -9,4 +9,12 @@ module.exports = merge(baseConfig, {
         filename: 'index.js',
         path: path.resolve(process.cwd(), 'client_build'),
     },
+    module: {
+        rules: [
+            {
+                test: /\.css$/i,
+                use: ['style-loader', 'css-loader']
+            },
+        ],
+    },
 });

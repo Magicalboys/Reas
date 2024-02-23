@@ -1,14 +1,10 @@
 import express from 'express';
 import childProcess from 'child_process';
 import path from 'path';
-import {Route, Routes, matchRoutes, RouteObject} from 'react-router-dom';
-import {renderToString} from 'react-dom/server';
-import {StaticRouter} from 'react-router-dom/server';
-import router from '@/router';
+import {matchRoutes, RouteObject} from 'react-router-dom';
+import {routesConfig} from '@/router';
 import {serverStore} from '@/store';
-import {Provider} from 'react-redux';
-import {Helmet} from 'react-helmet';
-import React from 'react';
+import {render} from './util';
 
 const app = express();
 
@@ -31,14 +27,14 @@ app.post('/api/getDemoData', (req, res) => {
 
 app.get('*', (req, res) => {
     const routeMap = new Map<string, () => Promise<any>>(); // path - loaddata 的map
-    router.forEach(item => {
+    routesConfig.forEach(item => {
         if (item.path && item.loadData) {
             routeMap.set(item.path, item.loadData(serverStore));
         }
     });
 
     // 匹配当前路由的routes
-    const matchedRoutes = matchRoutes(router as RouteObject[], req.path);
+    const matchedRoutes = matchRoutes(routesConfig as RouteObject[], req.path);
 
     const promises: Array<() => Promise<any>> = [];
     matchedRoutes?.forEach(item => {
@@ -47,40 +43,10 @@ app.get('*', (req, res) => {
         }
     });
 
-    Promise.all(promises).then(data => {
+    Promise.all(promises).then(() => {
     // 统一放到state里
     // 编译需要渲染的JSX, 转成对应的HTML STRING
-        const content = renderToString(
-            <Provider store={serverStore}>
-                <StaticRouter location={req.path}>
-                    <Routes>
-                        {router?.map((item, index) => (
-                            <Route {...item} key={index} />
-                        ))}
-                    </Routes>
-                </StaticRouter>
-            </Provider>
-        );
-
-        const helmet = Helmet.renderStatic();
-
-        res.send(`
-            <html>
-            <head>
-                ${helmet.title.toString()}
-                ${helmet.meta.toString()}
-            </head>
-            <body>
-                <div id="root">${content}</div>
-                <script>
-                window.context = {
-                    state: ${JSON.stringify(serverStore.getState())}
-                }
-                </script>
-                <script src="/index.js"></script>
-            </body>
-            </html>
-        `);
+        res.send(render(req));
     });
 });
 
